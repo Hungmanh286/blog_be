@@ -3,6 +3,7 @@
 # FASTAPI BASE
 
 ## Introduction
+
 Dựng khung project để phát triển dự án khá tốn kém thời gian và công sức.
 
 Vì vậy mình quyết định dựng FastAPI Base cung cấp sẵn các function basic nhất như CRUD User, Login, Register.
@@ -10,7 +11,9 @@ Vì vậy mình quyết định dựng FastAPI Base cung cấp sẵn các functi
 Project đã bao gồm migration DB và pytest để sẵn sàng sử dụng trong môi trường doanh nghiệp.
 
 ## Source Library
+
 Đây là phiên bản Backend base từ framework FastAPI. Trong code base này đã cấu hình sẵn
+
 - [FastAPI](https://fastapi.tiangolo.com/)
 - [Postgresql(>=12)](https://www.postgresql.org/)
 - Alembic
@@ -23,11 +26,14 @@ Project đã bao gồm migration DB và pytest để sẵn sàng sử dụng tro
 - Pytest
 
 ## Installation
+
 **Cách 1:**
+
 - Clone Project
 - Cài đặt Postgresql & Create Database
 - Cài đặt requirements.txt
 - Run project ở cổng 8000
+
 ```
 // Tạo postgresql Databases via CLI (Ubuntu 20.04)
 $ sudo -u postgres psql
@@ -45,17 +51,21 @@ $ cp env.example .env       // Recheck SQL_DATABASE_URL ở bước này
 $ alembic upgrade head
 $ uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
+
 **Cách 2:** Dùng Docker & Docker Compose - đơn giản hơn nhưng cần có kiến thức Docker
+
 - Clone Project
 - Run docker-compose
+
 ```
-$ git clone https://github.com/Longdh57/fastapi-base
-$ cd fastapi-base
-$ DOCKER_BUILDKIT=1 docker build -t fastapi-base:latest .
-$ docker-compose up -d
+git clone https://github.com/Longdh57/fastapi-base
+cd fastapi-base
+DOCKER_BUILDKIT=1 docker build -t fastapi-base:latest .
+docker-compose up -d
 ```
 
 ## Cấu trúc project
+
 ```
 .  
 ├── alembic  
@@ -88,14 +98,17 @@ $ docker-compose up -d
 ```
 
 ## Demo URL
+
 [FASTAPI-BASE](http://fastapi-base.longblog.site/docs)
 
 ## Migration
+
 Migration là một tính năng cho phép bạn thay đổi cả cấu trúc và dữ liệu trong database.
 
 Thay vì thay đổi trực tiếp vào database thì project FastAPI này sử dụng alembic để thực hiện việc thay đổi các table
 
 **File migration - SAMPLE**
+
 ```
 # alembic/versions/f9a075ca46e9_.py
 
@@ -124,10 +137,11 @@ def downgrade():
 ```
 
 ## Guide: Tạo bảng Book quản lý list sách bằng migration
+
 Link [CREATE_DB_GUIDE.md](./document/CREATE_DB_GUIDE.md)
 
-
 ## FastAPI UI
+
 Song song với FastAPI backend, đây là phiên bản Frontend tương thích với project này.
 
 URL: [FastAPI Base Frontend](https://github.com/Longdh57/FastAPI-Base-Frontend)

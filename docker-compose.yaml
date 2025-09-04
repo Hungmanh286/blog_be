@@ -1,35 +1,35 @@
-version: '3.7'
-
 services:
   db:
     image: postgres:13.2
     volumes:
       - ./docker/db:/var/lib/postgresql/data
       - ./postgresql.conf:/etc/postgresql/postgresql.conf
-    expose:
-      - 5432
     environment:
-      - POSTGRES_DB=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      POSTGRES_DB: blog
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: 123123
     ports:
-      - "5433:5432"
+      - "5436:5432"
     restart: unless-stopped
+    networks:
+      - datablog-net
 
   alembic:
     image: fastapi-base:latest
     environment:
-      SQL_DATABASE_URL: 'postgresql+psycopg2://postgres:postgres@db:5432/postgres'
+      SQL_DATABASE_URL: 'postgresql+psycopg2://admin:123123@db:5432/blog'
       SECRET_KEY: ${SECRET_KEY}
     command: [ "alembic", "upgrade", "head" ]
     depends_on:
       - db
+    networks:
+      - datablog-net
 
   app:
     image: fastapi-base:latest
     environment:
       PROJECT_NAME: ${PROJECT_NAME}
-      SQL_DATABASE_URL: 'postgresql+psycopg2://postgres:postgres@db:5432/postgres'
+      SQL_DATABASE_URL: 'postgresql+psycopg2://admin:123123@db:5432/blog'
       SECRET_KEY: ${SECRET_KEY}
     ports:
       - "8000:8000"
@@ -37,3 +37,9 @@ services:
     depends_on:
       - db
       - alembic
+    networks:
+      - datablog-net
+
+networks:
+  datablog-net:
+    driver: bridge
