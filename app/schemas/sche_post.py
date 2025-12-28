@@ -8,6 +8,7 @@ class Post(SQLModel, table=True):
     __tablename__ = "posts"
     id: Optional[int] = Field(default=None, primary_key=True)
     category: str
+    description: str
     title: str
     date: str
     heroImage: str

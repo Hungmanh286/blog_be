@@ -13,7 +13,7 @@ class Settings(BaseSettings):
     SECRET_KEY: str = "secret123"
     API_PREFIX: str = ""
     BACKEND_CORS_ORIGINS: List[str] = ["*"]
-    DATABASE_URL: str = "postgresql://db_user:secret123@localhost:5433/fastapi_base"
+    DATABASE_URL: str = "postgresql+psycopg2://admin:123123@localhost:5433/blog"
     ACCESS_TOKEN_EXPIRE_SECONDS: int = 60 * 60 * 24 * 7
     SECURITY_ALGORITHM: str = "HS256"
     LOGGING_CONFIG_FILE: str = os.path.join(BASE_DIR, "logging.ini")

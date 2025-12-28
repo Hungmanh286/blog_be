@@ -9,7 +9,7 @@ services:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: 123123
     ports:
-      - "5436:5432"
+      - "5433:5432"
     restart: unless-stopped
     networks:
       - datablog-net
