@@ -7,7 +7,7 @@ from fastapi_sqlalchemy import db
 from pydantic import ValidationError
 from starlette import status
 
-from app.models import User
+from app.db import User
 from app.core.config import settings
 from app.core.security import verify_password, get_password_hash
 from app.schemas.sche_token import TokenPayload

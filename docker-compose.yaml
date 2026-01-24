@@ -4,12 +4,13 @@ services:
     volumes:
       - ./docker/db:/var/lib/postgresql/data
       - ./postgresql.conf:/etc/postgresql/postgresql.conf
+      - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
     environment:
       POSTGRES_DB: blog
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: 123123
     ports:
-      - "5433:5432"
+      - "5436:5432"
     restart: unless-stopped
     networks:
       - datablog-net
@@ -17,9 +18,9 @@ services:
   alembic:
     image: fastapi-base:latest
     environment:
-      SQL_DATABASE_URL: 'postgresql+psycopg2://admin:123123@db:5432/blog'
+      SQL_DATABASE_URL: "postgresql+psycopg2://admin:123123@db:5432/blog"
       SECRET_KEY: ${SECRET_KEY}
-    command: [ "alembic", "upgrade", "head" ]
+    command: ["alembic", "upgrade", "head"]
     depends_on:
       - db
     networks:
@@ -29,10 +30,10 @@ services:
     image: fastapi-base:latest
     environment:
       PROJECT_NAME: ${PROJECT_NAME}
-      SQL_DATABASE_URL: 'postgresql+psycopg2://admin:123123@db:5432/blog'
+      SQL_DATABASE_URL: "postgresql+psycopg2://admin:123123@db:5432/blog"
       SECRET_KEY: ${SECRET_KEY}
     ports:
-      - "8000:8000"
+      - "8001:8001"
     restart: unless-stopped
     depends_on:
       - db

@@ -1,7 +1,7 @@
 from starlette.testclient import TestClient
 
 from app.core.config import settings
-from app.models import User
+from app.db import User
 from tests.faker import fake
 
 

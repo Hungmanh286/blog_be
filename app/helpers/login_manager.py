@@ -1,6 +1,6 @@
 from fastapi import HTTPException, Depends
 
-from app.models import User
+from app.db import User
 from app.services.srv_user import UserService
 
 

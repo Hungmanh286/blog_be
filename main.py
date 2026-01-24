@@ -7,7 +7,7 @@ from sqlmodel import SQLModel
 from contextlib import asynccontextmanager
 
 from app.api.api_router import router
-from app.models import Base
+from app.db import Base
 from app.db.base import engine
 from app.core.config import settings
 from app.helpers.exception_handler import CustomException, http_exception_handler

@@ -10,7 +10,7 @@ from app.helpers.paging import Page, PaginationParams, paginate
 from app.schemas.sche_base import DataResponse
 from app.schemas.sche_user import UserItemResponse, UserCreateRequest, UserUpdateMeRequest, UserUpdateRequest
 from app.services.srv_user import UserService
-from app.models import User
+from app.db import User
 
 logger = logging.getLogger()
 router = APIRouter()

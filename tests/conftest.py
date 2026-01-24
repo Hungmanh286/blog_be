@@ -5,7 +5,7 @@ from datetime import datetime
 from operator import itemgetter
 from docstring_parser import parse
 from app.main import get_application
-from app.models.model_base import Base
+from app.db import Base
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from typing import Any, Generator

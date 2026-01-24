@@ -2,7 +2,7 @@ import logging
 import faker.providers
 
 from app.helpers.enums import UserRole
-from app.models import User
+from app.db import User
 from fastapi_sqlalchemy import db
 from app.core.security import get_password_hash
 
