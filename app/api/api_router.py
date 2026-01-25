@@ -1,6 +1,9 @@
 from fastapi import APIRouter
 
-from app.api import api_user, api_login, api_register, api_healthcheck, api_post, api_market_data
+from app.api import (
+    api_user, api_login, api_register, api_healthcheck, api_post, 
+    api_market_data, api_market_indicators
+)
 
 router = APIRouter()
 
@@ -12,3 +15,4 @@ router.include_router(api_register.router, tags=["register"], prefix="/register"
 router.include_router(api_user.router, tags=["user"], prefix="/users")
 router.include_router(api_post.router, tags=["posts"], prefix="/posts")
 router.include_router(api_market_data.router, tags=["market-data"], prefix="/market-data")
+router.include_router(api_market_indicators.router, tags=["market-indicators"], prefix="/market-indicators")

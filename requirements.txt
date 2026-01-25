@@ -48,3 +48,6 @@ pytest
 Faker
 fastapi_sqlalchemy
 psycopg2-binary
+more-itertools
+sqlmodel
+tqdm

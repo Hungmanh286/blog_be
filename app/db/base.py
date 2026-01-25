@@ -1,4 +1,4 @@
-from typing import Generator, List
+from typing import Generator, List, Union
 
 
 from sqlalchemy import create_engine
@@ -27,7 +27,7 @@ def get_db() -> Generator:
 
 def upsert_database(
     data: List,
-    table: str | SQLModel,
+    table: Union[str, SQLModel],
     schema: str,
     engine: Engine = engine,
     batch_size: int = 200,

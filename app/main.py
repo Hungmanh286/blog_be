@@ -3,7 +3,6 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi_sqlalchemy import DBSessionMiddleware
 from starlette.middleware.cors import CORSMiddleware
-from sqlmodel import SQLModel
 from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
 
@@ -16,7 +15,6 @@ from app.helpers.exception_handler import CustomException, http_exception_handle
 
 def create_db_and_tables():
     print("Creating database and tables...")
-    SQLModel.metadata.create_all(engine)
     Base.metadata.create_all(bind=engine)
 
 
@@ -55,11 +53,11 @@ def get_application() -> FastAPI:
     application.add_middleware(DBSessionMiddleware, db_url=settings.DATABASE_URL)
     application.include_router(router, prefix=settings.API_PREFIX)
     application.add_exception_handler(CustomException, http_exception_handler)
-    application.mount(
-        "/uploads",
-        StaticFiles(directory="/home/hungmanh/Documents/blog_be/app/uploads"),
-        name="uploads",
-    )
+    # application.mount(
+    #     "/uploads",
+    #     StaticFiles(directory="/home/hungmanh/Documents/blog_be/app/uploads"),
+    #     name="uploads",
+    # )
 
     return application
 
