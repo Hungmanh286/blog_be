@@ -5,6 +5,7 @@ services:
       - ./docker/db:/var/lib/postgresql/data
       - ./postgresql.conf:/etc/postgresql/postgresql.conf
       - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./scripts:/scripts
     environment:
       POSTGRES_DB: blog
       POSTGRES_USER: admin
@@ -12,6 +13,11 @@ services:
     ports:
       - "5436:5432"
     restart: unless-stopped
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U admin -d blog" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
     networks:
       - datablog-net
 
@@ -20,9 +26,10 @@ services:
     environment:
       SQL_DATABASE_URL: "postgresql+psycopg2://admin:123123@db:5432/blog"
       SECRET_KEY: ${SECRET_KEY}
-    command: ["alembic", "upgrade", "head"]
+    command: [ "alembic", "upgrade", "head" ]
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     networks:
       - datablog-net
 
@@ -36,8 +43,10 @@ services:
       - "8001:8001"
     restart: unless-stopped
     depends_on:
-      - db
-      - alembic
+      db:
+        condition: service_healthy
+      alembic:
+        condition: service_completed_successfully
     networks:
       - datablog-net
 

@@ -1,7 +1,6 @@
 from typing import Optional, TypeVar, Generic
-from pydantic.generics import GenericModel
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 T = TypeVar("T")
 
@@ -23,11 +22,10 @@ class ResponseSchemaBase(BaseModel):
         return self
 
 
-class DataResponse(ResponseSchemaBase, GenericModel, Generic[T]):
+class DataResponse(ResponseSchemaBase, Generic[T]):
     data: Optional[T] = None
-
-    class Config:
-        arbitrary_types_allowed = True
+    
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     def custom_response(self, code: str, message: str, data: T):
         self.code = code

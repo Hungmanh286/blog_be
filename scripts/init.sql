@@ -3,100 +3,106 @@
 -- Tự động chạy khi khởi động Docker PostgreSQL
 -- =============================================================================
 
--- 1. Bảng dữ liệu thị trường hàng ngày (Tất cả chỉ số biến động)
-CREATE TABLE IF NOT EXISTS fact_market_daily (
-    trade_date DATE PRIMARY KEY,
-    -- Market Map
-    price_close DECIMAL(15,2),
-    -- Avg & Liquidity
-    avg_50d_orders INT,
-    turnover_ratio DECIMAL(10,4),
-    matching_rate DECIMAL(10,2),
-    -- Technicals
-    volatility_index DECIMAL(10,2),
-    breadth_index DECIMAL(10,2),
-    trading_probability DECIMAL(10,2),
-    derivative_ratio DECIMAL(10,2),
-    insider_trans_3m DECIMAL(10,4),
-    -- Valuation & Fundamentals
-    dividend_yield_12m DECIMAL(10,2),
-    pb_vnindex DECIMAL(10,2),
-    pb_non_bank DECIMAL(10,2),
-    pb_bank DECIMAL(10,2),
-    eps_vnindex DECIMAL(10,2),
-    eps_non_bank DECIMAL(10,2),
-    -- Correlations & Economy
-    corr_spx DECIMAL(10,4),
-    corr_vn1y DECIMAL(10,4),
-    corr_usd DECIMAL(10,4),
-    econ_consumption DECIMAL(10,2),
-    econ_production DECIMAL(10,2),
-    econ_labor DECIMAL(10,2)
+-- --- BẢNG 1: Dữ liệu thị trường hàng ngày (Market Data) ---
+CREATE TABLE IF NOT EXISTS market_indicators (
+    report_date DATE,                       -- date (ví dụ 1/9/2026)
+    volatility_index FLOAT,                 -- vol
+    breadth_index FLOAT,                    -- bre
+    market_price INT,                       -- map
+    dividend_12m_pct FLOAT,                 -- div (%dividen_12M)
+    
+    -- Nhóm EPS
+    eps_vnindex FLOAT,                      -- eps
+    eps_nonbank FLOAT,                      -- eps
+    
+    -- Nhóm Short Term (%st)
+    st_pe_under_10_pct FLOAT,               -- %pe<10
+    st_pb_under_1_pct FLOAT,                -- %pb<1
+    
+    -- Nhóm PB
+    pb_vnindex FLOAT,                       -- pb
+    pb_nonbank FLOAT,                       -- pb
+    pb_bank FLOAT,                          -- pb
+    
+    -- Nhóm Return (ret)
+    ret_40years_old_pct FLOAT,              -- ret (ví dụ 99.1)
+    ret_vni_adjusted_pct FLOAT,             -- ret
+    
+    turnover_ratio FLOAT,                   -- tur
+    derivatives_ratio FLOAT,                -- der
+    insider_transaction_3m_pct FLOAT,       -- ins
+    probability FLOAT,                      -- tra
+    avg_50d_orders INT,                     -- avg
+    matching_rate_pct FLOAT,                -- mat (ví dụ 53.3)
+    
+    cor_spx FLOAT,                          
+    cor_vn1y FLOAT,
+    cor_usd FLOAT,                      
+    
+    hea_consumption FLOAT,
+    hea_production FLOAT,
+    hea_labor FLOAT,
+
+    PRIMARY KEY (report_date)
 );
 
--- 2. Bảng dữ liệu Vĩ mô (Tháng/Quý)
-CREATE TABLE IF NOT EXISTS fact_macro_periodic (
-    report_date DATE PRIMARY KEY,
-    gdp_cap_ratio DECIMAL(10,2),
-    m2_growth DECIMAL(10,2),
-    margin_ratio DECIMAL(10,2),
-    deposit_ratio DECIMAL(10,2)
+CREATE TABLE IF NOT EXISTS portfolio_performance (
+    year INT,                               -- por(year)
+    por_40_years_old FLOAT,                 -- por_40_years_old
+    por_vni_adjusted FLOAT,                 -- por_vni_adjusted
+    
+    PRIMARY KEY (year)
 );
 
--- 3. Bảng Snapshot so sánh (Ngành & Thế giới)
-CREATE TABLE IF NOT EXISTS dim_market_snapshot (
-    entity_name VARCHAR(100) NOT NULL,
-    category VARCHAR(50) NOT NULL, -- 'SECTOR' or 'GLOBAL'
-    ytd_return DECIMAL(10,2),
-    growth_score DECIMAL(5,2),      -- Percentile Growth
-    valuation_score DECIMAL(5,2),   -- Percentile Valuation (chung)
-    pe_percentile DECIMAL(5,2),     -- Riêng cho Sector
-    pb_percentile DECIMAL(5,2),     -- Riêng cho Sector
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (entity_name, category)
+CREATE TABLE IF NOT EXISTS sector_valuation (
+    sector_name VARCHAR(100),               -- sec (ngành) - Dùng VARCHAR cho tương thích PostgreSQL
+    pe_percentile FLOAT,                    -- pe_percentile
+    pb_percentile FLOAT,                    -- pb_percentile
+    
+    PRIMARY KEY (sector_name)
 );
 
--- 4.1 Bảng Thông tin danh mục
-CREATE TABLE IF NOT EXISTS portfolio_info (
-    portfolio_code VARCHAR(50) PRIMARY KEY, -- '40YO', 'VNI_ADJ'
-    portfolio_name VARCHAR(100),
-    return_since_inception DECIMAL(10,2),
-    avg_return_1y DECIMAL(10,2),
-    var_10 DECIMAL(10,2),
-    alpha DECIMAL(10,2),
-    beta DECIMAL(10,2),
-    risk_free_rate DECIMAL(10,2),
-    ret_2023 DECIMAL(10,2),
-    ret_2024 DECIMAL(10,2),
-    ret_2025 DECIMAL(10,2),
-    ret_2026 DECIMAL(10,2)
+-- --- BẢNG 4: Phân tích thị trường thế giới (World Market Analysis - WMA) ---
+CREATE TABLE IF NOT EXISTS world_market_analysis (
+    country VARCHAR(100),                   -- wma (country)
+    ytd_pct FLOAT,                          -- ytd(%)
+    percentile_growth FLOAT,                -- percentile growth
+    percentile_valuation FLOAT,             -- percentile valuation
+    
+    PRIMARY KEY (country)
 );
 
--- 4.2 Bảng Lịch sử lợi nhuận danh mục
-CREATE TABLE IF NOT EXISTS portfolio_daily_log (
-    log_date DATE,
-    portfolio_code VARCHAR(50),
-    daily_return DECIMAL(10,5),
-    PRIMARY KEY (log_date, portfolio_code),
-    FOREIGN KEY (portfolio_code) REFERENCES portfolio_info(portfolio_code)
+-- --- BẢNG 5: Chỉ số vĩ mô theo tháng (Macro Monthly) ---
+CREATE TABLE IF NOT EXISTS macro_indicators (
+    month_label VARCHAR(20),                -- month (ví dụ "thg 1-23")
+    gdp_growth_pct FLOAT,                   -- %gdp(%gdb)
+    m2_growth_pct FLOAT,                    -- %gdp(%m2)
+    mar_margin FLOAT,                       -- mar(mar_margin)
+    mar_deposit FLOAT,                      -- mar(mar_deposit)
+
+    PRIMARY KEY (month_label) 
+    -- Lưu ý: Tốt nhất nên lưu tháng dưới dạng DATE (ví dụ 2023-01-01) để dễ sắp xếp, 
+    -- nhưng ở đây để VARCHAR theo yêu cầu.
 );
 
 -- =============================================================================
 -- Indexes for performance optimization
 -- =============================================================================
 
--- Index cho fact_market_daily
-CREATE INDEX IF NOT EXISTS idx_fact_market_daily_date ON fact_market_daily(trade_date);
+-- Index cho market_indicators
+CREATE INDEX IF NOT EXISTS idx_market_indicators_date ON market_indicators(report_date);
 
--- Index cho fact_macro_periodic
-CREATE INDEX IF NOT EXISTS idx_fact_macro_periodic_date ON fact_macro_periodic(report_date);
+-- Index cho portfolio_performance
+CREATE INDEX IF NOT EXISTS idx_portfolio_performance_year ON portfolio_performance(year);
 
--- Index cho dim_market_snapshot
-CREATE INDEX IF NOT EXISTS idx_dim_market_snapshot_category ON dim_market_snapshot(category);
+-- Index cho sector_valuation
+CREATE INDEX IF NOT EXISTS idx_sector_valuation_name ON sector_valuation(sector_name);
 
--- Index cho portfolio_daily_log
-CREATE INDEX IF NOT EXISTS idx_portfolio_daily_log_code ON portfolio_daily_log(portfolio_code);
-CREATE INDEX IF NOT EXISTS idx_portfolio_daily_log_date ON portfolio_daily_log(log_date);
+-- Index cho world_market_analysis
+CREATE INDEX IF NOT EXISTS idx_world_market_analysis_country ON world_market_analysis(country);
+
+-- Index cho macro_indicators
+CREATE INDEX IF NOT EXISTS idx_macro_indicators_month ON macro_indicators(month_label);
 
 -- =============================================================================
 -- Grant permissions (optional - adjust as needed)
