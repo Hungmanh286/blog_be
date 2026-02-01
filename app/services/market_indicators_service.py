@@ -67,7 +67,7 @@ SHEET_COLUMN_MAPPING = {
         }
     },
     'Ret': {
-        'date_col': 'Unnamed: 0',  # Cột đầu tiên không có tên
+        'date_col': 'Unnamed: 0', 
         'columns': {
             '40 Years Old': 'ret_40years_old_pct',
             'VNI Adjusted': 'ret_vni_adjusted_pct'
@@ -204,7 +204,7 @@ class MarketIndicatorsService:
         """
         min_date = None
         max_date = None
-        sheet_data = {} 
+        sheet_data = {}
         
         for sheet_name in excel_file.sheet_names:
             if sheet_name not in SHEET_COLUMN_MAPPING:

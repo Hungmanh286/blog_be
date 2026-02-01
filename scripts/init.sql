@@ -1,8 +1,3 @@
--- =============================================================================
--- Database Initialization Script
--- Tự động chạy khi khởi động Docker PostgreSQL
--- =============================================================================
-
 -- --- BẢNG 1: Dữ liệu thị trường hàng ngày (Market Data) ---
 CREATE TABLE IF NOT EXISTS market_indicators (
     report_date DATE,                       -- date (ví dụ 1/9/2026)
@@ -55,9 +50,9 @@ CREATE TABLE IF NOT EXISTS portfolio_performance (
 );
 
 CREATE TABLE IF NOT EXISTS sector_valuation (
-    sector_name VARCHAR(100),               -- sec (ngành) - Dùng VARCHAR cho tương thích PostgreSQL
-    pe_percentile FLOAT,                    -- pe_percentile
-    pb_percentile FLOAT,                    -- pb_percentile
+    sector_name VARCHAR(100),               
+    pe_percentile FLOAT,                    
+    pb_percentile FLOAT,                    
     
     PRIMARY KEY (sector_name)
 );
@@ -81,30 +76,13 @@ CREATE TABLE IF NOT EXISTS macro_indicators (
     mar_deposit FLOAT,                      -- mar(mar_deposit)
 
     PRIMARY KEY (month_label) 
-    -- Lưu ý: Tốt nhất nên lưu tháng dưới dạng DATE (ví dụ 2023-01-01) để dễ sắp xếp, 
-    -- nhưng ở đây để VARCHAR theo yêu cầu.
 );
 
--- =============================================================================
--- Indexes for performance optimization
--- =============================================================================
 
--- Index cho market_indicators
 CREATE INDEX IF NOT EXISTS idx_market_indicators_date ON market_indicators(report_date);
-
--- Index cho portfolio_performance
 CREATE INDEX IF NOT EXISTS idx_portfolio_performance_year ON portfolio_performance(year);
-
--- Index cho sector_valuation
 CREATE INDEX IF NOT EXISTS idx_sector_valuation_name ON sector_valuation(sector_name);
-
--- Index cho world_market_analysis
 CREATE INDEX IF NOT EXISTS idx_world_market_analysis_country ON world_market_analysis(country);
-
--- Index cho macro_indicators
 CREATE INDEX IF NOT EXISTS idx_macro_indicators_month ON macro_indicators(month_label);
 
--- =============================================================================
--- Grant permissions (optional - adjust as needed)
--- =============================================================================
--- GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO admin;
+
