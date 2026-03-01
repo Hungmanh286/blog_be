@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, ConfigDict
 
 from app.helpers.enums import UserRole
 
@@ -11,8 +11,7 @@ class UserBase(BaseModel):
     email: Optional[EmailStr] = None
     is_active: Optional[bool] = True
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class UserItemResponse(UserBase):

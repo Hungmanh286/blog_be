@@ -1,11 +1,10 @@
 import logging
-from pydantic import BaseModel, conint
+from pydantic import BaseModel, conint, ConfigDict
 from abc import ABC, abstractmethod
 from typing import Optional, Generic, Sequence, Type, TypeVar
 
 from sqlalchemy import asc, desc
 from sqlalchemy.orm import Query
-from pydantic.generics import GenericModel
 from contextvars import ContextVar
 
 from app.schemas.sche_base import ResponseSchemaBase, MetadataSchema
@@ -24,11 +23,10 @@ class PaginationParams(BaseModel):
     order: Optional[str] = "desc"
 
 
-class BasePage(ResponseSchemaBase, GenericModel, Generic[T], ABC):
+class BasePage(ResponseSchemaBase, Generic[T], ABC):
     data: Sequence[T]
 
-    class Config:
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     @classmethod
     @abstractmethod

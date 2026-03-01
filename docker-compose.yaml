@@ -21,19 +21,19 @@ services:
     networks:
       - datablog-net
 
-  alembic:
-    image: fastapi-base:latest
-    environment:
-      SQL_DATABASE_URL: "postgresql+psycopg2://admin:123123@db:5432/blog"
-      SECRET_KEY: ${SECRET_KEY}
-      PYTHONPATH: /app
-    working_dir: /app
-    command: [ "alembic", "upgrade", "head" ]
-    depends_on:
-      db:
-        condition: service_healthy
-    networks:
-      - datablog-net
+  # alembic:
+  #   image: fastapi-base:latest
+  #   environment:
+  #     SQL_DATABASE_URL: "postgresql+psycopg2://admin:123123@db:5432/blog"
+  #     SECRET_KEY: ${SECRET_KEY}
+  #     PYTHONPATH: /app
+  #   working_dir: /app
+  #   command: [ "alembic", "upgrade", "head" ]
+  #   depends_on:
+  #     db:
+  #       condition: service_healthy
+  #   networks:
+  #     - datablog-net
 
   app:
     image: fastapi-base:latest
