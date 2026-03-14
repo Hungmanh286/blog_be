@@ -1,10 +1,12 @@
 import logging
 import uvicorn
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi_sqlalchemy import DBSessionMiddleware
 from starlette.middleware.cors import CORSMiddleware
 from sqlmodel import SQLModel
-from contextlib import asynccontextmanager
+
 
 from app.api.api_router import router
 from app.db import Base

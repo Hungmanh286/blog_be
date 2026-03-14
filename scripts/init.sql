@@ -78,11 +78,28 @@ CREATE TABLE IF NOT EXISTS macro_indicators (
     PRIMARY KEY (month_label) 
 );
 
+-- --- BẢNG 6: Bài viết blog (Posts) ---
+CREATE TABLE IF NOT EXISTS posts (
+    id SERIAL PRIMARY KEY,
+    category VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL,
+    title VARCHAR(500) NOT NULL,
+    date VARCHAR(50) NOT NULL,
+    heroImage VARCHAR(500) NOT NULL,
+    content JSONB NOT NULL,                 -- TipTap JSON content
+    area VARCHAR(255) NOT NULL,
+    url VARCHAR(500) NOT NULL,
+    published_at TIMESTAMP
+);
+
 
 CREATE INDEX IF NOT EXISTS idx_market_indicators_date ON market_indicators(report_date);
 CREATE INDEX IF NOT EXISTS idx_portfolio_performance_year ON portfolio_performance(year);
 CREATE INDEX IF NOT EXISTS idx_sector_valuation_name ON sector_valuation(sector_name);
 CREATE INDEX IF NOT EXISTS idx_world_market_analysis_country ON world_market_analysis(country);
 CREATE INDEX IF NOT EXISTS idx_macro_indicators_month ON macro_indicators(month_label);
+CREATE INDEX IF NOT EXISTS idx_posts_category ON posts(category);
+CREATE INDEX IF NOT EXISTS idx_posts_published_at ON posts(published_at);
+CREATE INDEX IF NOT EXISTS idx_posts_url ON posts(url);
 
 
