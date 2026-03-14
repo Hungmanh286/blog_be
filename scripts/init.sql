@@ -38,6 +38,11 @@ CREATE TABLE IF NOT EXISTS market_indicators (
     hea_production FLOAT,
     hea_labor FLOAT,
 
+    gdp_pct FLOAT,                          -- % GDP
+    m2_pct FLOAT,                           -- % M2
+    margin FLOAT,                           -- Margin
+    deposit FLOAT,                          -- Deposit
+
     PRIMARY KEY (report_date)
 );
 

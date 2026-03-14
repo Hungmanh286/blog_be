@@ -10,6 +10,7 @@ from typing import Dict, Any
 from sqlalchemy import text
 from collections import defaultdict
 
+from app.db.models import MarketIndicators
 from app.db import get_db
 from app.services.market_indicators_service import MarketIndicatorsService
 from app.schemas.sche_base import DataResponse
@@ -50,6 +51,8 @@ async def upload_market_indicators(
     - Mat: Matching Rate %
     - Cor: SPX, VN1Y, USD correlations
     - Hea: Consumption, Production, Labor health
+    - %GDP: % GDP, % M2
+    - Mar: Margin, Deposit
     """
     # Validate file type
     if not file.filename.endswith((".xlsx", ".xls")):
@@ -118,8 +121,8 @@ async def get_market_indicators_status(db: Session = Depends(get_db)):
         )
 
 
-@router.get("/sample", response_model=DataResponse[Dict[str, Any]])
-async def get_sample_data(
+@router.get("", response_model=DataResponse[Dict[str, Any]])
+async def get_market_indicators_data(
     limit: int = 10, indicators: str = None, db: Session = Depends(get_db)
 ):
     """
@@ -140,41 +143,52 @@ async def get_sample_data(
     """
 
     try:
+        valid_columns = {
+            c.name
+            for c in MarketIndicators.__table__.columns
+            if c.name != "report_date"
+        }
+
         requested_indicators = None
         if indicators:
             requested_indicators = set(ind.strip() for ind in indicators.split(","))
 
-        result = db.execute(
-            text(f"""
-            SELECT * FROM market_indicators 
-            ORDER BY report_date DESC 
-            LIMIT {limit}
-        """)
+        cols_to_fetch = (
+            list(requested_indicators) if requested_indicators else list(valid_columns)
         )
 
         indicators_dict = defaultdict(list)
-        columns = list(result.keys())
 
-        for row in result:
-            row_dict = dict(zip(columns, row))
+        for col in cols_to_fetch:
+            if col not in valid_columns:
+                continue
 
-            report_date = None
-            if "report_date" in row_dict and row_dict["report_date"] is not None:
-                report_date = (
-                    row_dict["report_date"].isoformat()
-                    if hasattr(row_dict["report_date"], "isoformat")
-                    else str(row_dict["report_date"])
-                )
+            query = text(
+                f"""
+                SELECT report_date, {col} 
+                FROM market_indicators 
+                WHERE {col} IS NOT NULL 
+                ORDER BY report_date DESC 
+                LIMIT :limit
+            """
+            )
 
-            for col, value in row_dict.items():
-                if value is not None and col != "report_date":
-                    if requested_indicators and col not in requested_indicators:
-                        continue
+            result = db.execute(query, {"limit": limit})
+            for row in result:
+                report_date = row[0]
+                val = row[1]
 
-                    if hasattr(value, "isoformat"):
-                        value = value.isoformat()
+                if report_date is not None:
+                    report_date_str = (
+                        report_date.isoformat()
+                        if hasattr(report_date, "isoformat")
+                        else str(report_date)
+                    )
 
-                    indicators_dict[col].append({"date": report_date, "value": value})
+                    if hasattr(val, "isoformat"):
+                        val = val.isoformat()
+
+                    indicators_dict[col].append({"date": report_date_str, "value": val})
 
         return DataResponse[Dict[str, Any]]().success_response(
             data=dict(indicators_dict)

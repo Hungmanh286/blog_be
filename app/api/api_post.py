@@ -1,6 +1,6 @@
-from typing import List
+from typing import List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Response, status, Query
 
 from app.db.base import Session, get_db
 from app.schemas.sche_post import PostCreate, PostUpdate, PostResponse
@@ -21,6 +21,24 @@ def create_post(payload: PostCreate, service: PostService = Depends(get_post_ser
     return post
 
 
+@router.get("/areas", response_model=List[str])
+def read_areas(service: PostService = Depends(get_post_service)):
+    """Get list of all distinct areas"""
+    return service.get_areas()
+
+
+@router.get("/categories", response_model=List[str])
+def read_categories(service: PostService = Depends(get_post_service)):
+    """Get list of all distinct categories"""
+    return service.get_categories()
+
+
+@router.get("/archives")
+def read_archives(service: PostService = Depends(get_post_service)):
+    """Get list of stored months and years"""
+    return service.get_archives()
+
+
 @router.get("/{post_id}", response_model=PostResponse)
 def read_post(post_id: int, service: PostService = Depends(get_post_service)):
     """Get a post by ID"""
@@ -31,9 +49,18 @@ def read_post(post_id: int, service: PostService = Depends(get_post_service)):
 
 
 @router.get("/", response_model=List[PostResponse])
-def read_posts(service: PostService = Depends(get_post_service)):
-    """Get all posts"""
-    return service.get_posts()
+def read_posts(
+    area: Optional[str] = Query(None, description="Lọc theo khu vực (area)"),
+    category: Optional[str] = Query(None, description="Lọc theo chuỗi bài (category)"),
+    month: Optional[int] = Query(None, ge=1, le=12, description="Lọc theo tháng"),
+    year: Optional[int] = Query(None, description="Lọc theo năm"),
+    q: Optional[str] = Query(
+        None, description="Tìm kiếm theo tiêu đề, mô tả và nội dung"
+    ),
+    service: PostService = Depends(get_post_service),
+):
+    """Get all posts (with optional filters)"""
+    return service.get_posts(area=area, category=category, month=month, year=year, q=q)
 
 
 @router.put("/{post_id}", response_model=PostResponse)

@@ -91,6 +91,14 @@ class MarketIndicators(Base):
     hea_production = Column(Float)
     hea_labor = Column(Float)
 
+    # Nhóm %GDP
+    gdp_pct = Column(Float)  # % GDP
+    m2_pct = Column(Float)  # % M2
+
+    # Nhóm Mar
+    margin = Column(Float)  # Margin
+    deposit = Column(Float)  # Deposit
+
 
 class PortfolioPerformance(Base):
     """Hiệu suất danh mục theo năm (Portfolio Performance)."""
