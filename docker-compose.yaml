@@ -14,7 +14,7 @@ services:
       - "5436:5432"
     restart: unless-stopped
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U admin -d blog" ]
+      test: ["CMD-SHELL", "pg_isready -U admin -d blog"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -49,6 +49,8 @@ services:
         condition: service_healthy
     networks:
       - datablog-net
+    volumes:
+      - ./app:/app/app
 
 networks:
   datablog-net:
