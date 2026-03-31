@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 class S3Service:
     """
     Dịch vụ quản lý tệp trên MinIO sử dụng bộ SDK chính thức của MinIO.
-    
+
     Tối ưu hóa:
     1. Nhẹ hơn boto3.
     2. API đơn giản, chuyên cho MinIO.
@@ -24,7 +24,6 @@ class S3Service:
     """
 
     def __init__(self):
-        # Lấy host từ endpoint (ví dụ: "minio:9000" từ "http://minio:9000")
         parsed_url = urlparse(settings.MINIO_ENDPOINT)
         endpoint_host = parsed_url.netloc if parsed_url.netloc else parsed_url.path
         secure = parsed_url.scheme == "https"
@@ -66,7 +65,9 @@ class S3Service:
             ],
         }
         self.client.set_bucket_policy(self.bucket_name, json.dumps(policy))
-        logger.info("Đã thiết lập quyền đọc công khai cho bucket '%s'.", self.bucket_name)
+        logger.info(
+            "Đã thiết lập quyền đọc công khai cho bucket '%s'.", self.bucket_name
+        )
 
     def upload_file(
         self,
@@ -79,10 +80,14 @@ class S3Service:
         Tải file lên MinIO và trả về link truy cập công khai.
         """
         try:
-            ext = original_filename.rsplit(".", 1)[-1].lower() if "." in original_filename else "jpg"
+            ext = (
+                original_filename.rsplit(".", 1)[-1].lower()
+                if "." in original_filename
+                else "jpg"
+            )
             unique_filename = f"{uuid.uuid4().hex}.{ext}"
             object_key = f"{folder}/{unique_filename}"
-            
+
             # Sử dụng put_object cho dữ liệu trong bộ nhớ
             self.client.put_object(
                 self.bucket_name,
@@ -91,7 +96,7 @@ class S3Service:
                 length=len(file_content),
                 content_type=content_type,
             )
-            
+
             # Trả về URL dùng để hiển thị trên web
             public_url = f"{settings.MINIO_PUBLIC_URL.rstrip('/')}/{self.bucket_name}/{object_key}"
             logger.info("Đã tải lên '%s' → %s", original_filename, public_url)
@@ -110,7 +115,7 @@ class S3Service:
             if not file_url.startswith(base):
                 return False
 
-            object_key = file_url[len(base):]
+            object_key = file_url[len(base) :]
             self.client.remove_object(self.bucket_name, object_key)
             logger.info("Đã xóa file '%s' khỏi MinIO.", object_key)
             return True
@@ -121,6 +126,7 @@ class S3Service:
 
 # Lazy singleton pattern
 _s3_service: Optional[S3Service] = None
+
 
 def get_s3_service() -> S3Service:
     global _s3_service
