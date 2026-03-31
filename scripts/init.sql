@@ -90,10 +90,9 @@ CREATE TABLE IF NOT EXISTS posts (
     description TEXT NOT NULL,
     title VARCHAR(500) NOT NULL,
     date VARCHAR(50) NOT NULL,
-    heroImage VARCHAR(500) NOT NULL,
+    heroimage VARCHAR(1000) NOT NULL,
     content JSONB NOT NULL,                 -- TipTap JSON content
     area VARCHAR(255) NOT NULL,
-    url VARCHAR(500) NOT NULL,
     published_at TIMESTAMP
 );
 
@@ -105,6 +104,5 @@ CREATE INDEX IF NOT EXISTS idx_world_market_analysis_country ON world_market_ana
 CREATE INDEX IF NOT EXISTS idx_macro_indicators_month ON macro_indicators(month_label);
 CREATE INDEX IF NOT EXISTS idx_posts_category ON posts(category);
 CREATE INDEX IF NOT EXISTS idx_posts_published_at ON posts(published_at);
-CREATE INDEX IF NOT EXISTS idx_posts_url ON posts(url);
 
 

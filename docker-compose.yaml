@@ -2,7 +2,7 @@ services:
   db:
     image: postgres:13.2
     volumes:
-      - ./docker/db:/var/lib/postgresql/data
+      - db_data:/var/lib/postgresql/data
       - ./postgresql.conf:/etc/postgresql/postgresql.conf
       - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
       - ./scripts:/scripts
@@ -81,6 +81,7 @@ services:
 
 volumes:
   minio_data:
+  db_data:
 
 networks:
   datablog-net:
