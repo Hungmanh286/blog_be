@@ -25,7 +25,6 @@ async def create_post(
     date: str = Form(...),
     content: str = Form(..., description="TipTap JSON content as string"),
     area: str = Form(...),
-    url: str = Form(...),
     hero_image: Optional[UploadFile] = File(None, description="Hero image file to upload"),
     hero_image_url: Optional[str] = Form(None, description="Hero image URL (used if no file uploaded)"),
     service: PostService = Depends(get_post_service),
@@ -72,7 +71,6 @@ async def create_post(
         heroImage=hero_image_link,
         content=content_dict,
         area=area,
-        url=url,
     )
 
     post = service.create_post(post_data)
@@ -130,7 +128,6 @@ async def update_post(
     date: Optional[str] = Form(None),
     content: Optional[str] = Form(None, description="TipTap JSON content as string"),
     area: Optional[str] = Form(None),
-    url: Optional[str] = Form(None),
     hero_image: Optional[UploadFile] = File(None, description="New hero image file"),
     hero_image_url: Optional[str] = Form(None, description="New hero image URL"),
     service: PostService = Depends(get_post_service),
@@ -152,8 +149,6 @@ async def update_post(
         update_data["date"] = date
     if area is not None:
         update_data["area"] = area
-    if url is not None:
-        update_data["url"] = url
 
     if content is not None:
         try:

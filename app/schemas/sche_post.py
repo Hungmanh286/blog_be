@@ -1,7 +1,7 @@
 from typing import Optional, Dict, Any
 from datetime import datetime
 from sqlmodel import SQLModel, Field
-from sqlalchemy import Column, DateTime
+from sqlalchemy import Column, DateTime, String
 from sqlalchemy.dialects.postgresql import JSONB
 
 
@@ -14,10 +14,11 @@ class Post(SQLModel, table=True):
     description: str
     title: str
     date: str
-    heroImage: str
+    heroImage: Optional[str] = Field(
+        default="", sa_column=Column("heroimage", String(1000), nullable=False)
+    )
     content: Dict[Any, Any] = Field(sa_column=Column(JSONB))
     area: str
-    url: str
     published_at: Optional[datetime] = Field(
         default=None, sa_column=Column("published_at", DateTime, nullable=True)
     )
@@ -33,7 +34,6 @@ class PostCreate(SQLModel):
     heroImage: str
     content: Dict[Any, Any]  # TipTap JSON content
     area: str
-    url: str
 
 
 class PostUpdate(SQLModel):
@@ -46,7 +46,6 @@ class PostUpdate(SQLModel):
     heroImage: Optional[str] = None
     content: Optional[Dict[Any, Any]] = None  # TipTap JSON content
     area: Optional[str] = None
-    url: Optional[str] = None
 
 
 class PostResponse(SQLModel):
@@ -60,5 +59,4 @@ class PostResponse(SQLModel):
     heroImage: str
     content: Dict[Any, Any]  # TipTap JSON content
     area: str
-    url: str
     published_at: Optional[datetime] = None
