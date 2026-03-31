@@ -51,3 +51,4 @@ psycopg2-binary
 more-itertools
 sqlmodel
 tqdm
+boto3

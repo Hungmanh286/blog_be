@@ -16,6 +16,13 @@ class Settings(BaseSettings):
     DATABASE_URL: str = "postgresql+psycopg2://admin:123123@localhost:5433/blog"
     ACCESS_TOKEN_EXPIRE_SECONDS: int = 60 * 60 * 24 * 7
     SECURITY_ALGORITHM: str = "HS256"
+
+    # MinIO / S3 settings
+    MINIO_ENDPOINT: str = "http://minio:9000"
+    MINIO_ACCESS_KEY: str = "minioadmin"
+    MINIO_SECRET_KEY: str = "minioadmin"
+    MINIO_BUCKET_NAME: str = "blog-images"
+    MINIO_PUBLIC_URL: str = "http://localhost:9000"
     LOGGING_CONFIG_FILE: str = os.path.join(BASE_DIR, "logging.ini")
 
     model_config = SettingsConfigDict(env_file=os.path.join(BASE_DIR, ".env"))
