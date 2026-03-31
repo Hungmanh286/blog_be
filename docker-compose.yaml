@@ -57,16 +57,16 @@ services:
 
   app:
     build: .
-    image: hungmanh286/blog_be:latest
+    image: hung286/blog_be:latest
     environment:
       PROJECT_NAME: ${PROJECT_NAME}
-      SQL_DATABASE_URL: "postgresql+psycopg2://admin:123123@db:5432/blog"
+      DATABASE_URL: "postgresql+psycopg2://admin:123123@db:5432/blog"
       SECRET_KEY: ${SECRET_KEY}
-      MINIO_ENDPOINT: "http://minio:9000"      # internal docker network endpoint
+      MINIO_ENDPOINT: "http://minio:9000" # internal docker network endpoint
       MINIO_ACCESS_KEY: minioadmin
       MINIO_SECRET_KEY: minioadmin
       MINIO_BUCKET_NAME: blog-images
-      MINIO_PUBLIC_URL: "http://localhost:9000"  # public URL for clients to access images
+      MINIO_PUBLIC_URL: "http://localhost:9000" # public URL for clients to access images
     ports:
       - "8001:8001"
     restart: unless-stopped
