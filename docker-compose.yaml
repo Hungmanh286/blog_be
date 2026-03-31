@@ -56,7 +56,8 @@ services:
       - datablog-net
 
   app:
-    image: fastapi-base:latest
+    build: .
+    image: hungmanh286/blog_be:latest
     environment:
       PROJECT_NAME: ${PROJECT_NAME}
       SQL_DATABASE_URL: "postgresql+psycopg2://admin:123123@db:5432/blog"
