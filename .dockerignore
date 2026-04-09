@@ -3,3 +3,7 @@ docker/
 .idea/*
 docker-compose.yaml
 Dockerfile
+
+# Secrets — không bao giờ đưa vào image
+.env
+*.env

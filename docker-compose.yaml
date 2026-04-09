@@ -1,6 +1,11 @@
 services:
+
+  # ---------------------------------------------------------------------------
+  # PostgreSQL database
+  # ---------------------------------------------------------------------------
   db:
-    image: postgres:13.2
+    image: postgres:17-alpine
+    container_name: blog_db
     volumes:
       - db_data:/var/lib/postgresql/data
       - ./postgresql.conf:/etc/postgresql/postgresql.conf
@@ -14,29 +19,19 @@ services:
       - "5436:5432"
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U admin -d blog"]
+      test: [ "CMD-SHELL", "pg_isready -U admin -d blog" ]
       interval: 5s
       timeout: 5s
       retries: 10
     networks:
       - datablog-net
 
-  # alembic:
-  #   image: fastapi-base:latest
-  #   environment:
-  #     SQL_DATABASE_URL: "postgresql+psycopg2://admin:123123@db:5432/blog"
-  #     SECRET_KEY: ${SECRET_KEY}
-  #     PYTHONPATH: /app
-  #   working_dir: /app
-  #   command: [ "alembic", "upgrade", "head" ]
-  #   depends_on:
-  #     db:
-  #       condition: service_healthy
-  #   networks:
-  #     - datablog-net
-
+  # ---------------------------------------------------------------------------
+  # MinIO object storage
+  # ---------------------------------------------------------------------------
   minio:
     image: minio/minio:latest
+    container_name: blog_minio
     command: server /data --console-address ":9001"
     environment:
       MINIO_ROOT_USER: minioadmin
@@ -48,7 +43,7 @@ services:
       - minio_data:/data
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      test: [ "CMD", "curl", "-f", "http://localhost:9000/minio/health/live" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -56,17 +51,17 @@ services:
       - datablog-net
 
   app:
-    build: .
-    image: hung286/blog_be:latest
+    image: data_blog:latest
+    container_name: blog_app
+    env_file:
+      - .env
     environment:
-      PROJECT_NAME: ${PROJECT_NAME}
       DATABASE_URL: "postgresql+psycopg2://admin:123123@db:5432/blog"
-      SECRET_KEY: ${SECRET_KEY}
-      MINIO_ENDPOINT: "http://minio:9000" # internal docker network endpoint
+      MINIO_ENDPOINT: "http://minio:9000"
       MINIO_ACCESS_KEY: minioadmin
       MINIO_SECRET_KEY: minioadmin
       MINIO_BUCKET_NAME: blog-images
-      MINIO_PUBLIC_URL: "http://localhost:9000" # public URL for clients to access images
+      MINIO_PUBLIC_URL: "https://hungmanhdev.me"
     ports:
       - "8001:8001"
     restart: unless-stopped
@@ -79,10 +74,12 @@ services:
       - datablog-net
     volumes:
       - ./app:/app/app
+      - ./logging.ini:/app/logging.ini:ro
 
 volumes:
   minio_data:
   db_data:
+
 
 networks:
   datablog-net:

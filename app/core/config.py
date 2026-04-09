@@ -22,7 +22,7 @@ class Settings(BaseSettings):
     MINIO_ACCESS_KEY: str = "minioadmin"
     MINIO_SECRET_KEY: str = "minioadmin"
     MINIO_BUCKET_NAME: str = "blog-images"
-    MINIO_PUBLIC_URL: str = "http://localhost:9000"
+    MINIO_PUBLIC_URL: str = "https://hungmanhdev.me"
     LOGGING_CONFIG_FILE: str = os.path.join(BASE_DIR, "logging.ini")
 
     model_config = SettingsConfigDict(env_file=os.path.join(BASE_DIR, ".env"))
