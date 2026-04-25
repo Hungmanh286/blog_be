@@ -1,9 +1,19 @@
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Response, status, Query, UploadFile, File, Form
+from fastapi import (
+    APIRouter,
+    Depends,
+    HTTPException,
+    Response,
+    status,
+    Query,
+    UploadFile,
+    File,
+    Form,
+)
 
 from app.db.base import Session, get_db
-from app.schemas.sche_post import PostCreate, PostUpdate, PostResponse
+from app.schemas.sche_post import PostCreate, PostResponse
 from app.services.srv_post import PostService
 from app.services.srv_s3 import get_s3_service
 
@@ -25,8 +35,12 @@ async def create_post(
     date: str = Form(...),
     content: str = Form(..., description="TipTap JSON content as string"),
     area: str = Form(...),
-    hero_image: Optional[UploadFile] = File(None, description="Hero image file to upload"),
-    hero_image_url: Optional[str] = Form(None, description="Hero image URL (used if no file uploaded)"),
+    hero_image: Optional[UploadFile] = File(
+        None, description="Hero image file to upload"
+    ),
+    hero_image_url: Optional[str] = Form(
+        None, description="Hero image URL (used if no file uploaded)"
+    ),
     service: PostService = Depends(get_post_service),
 ):
     """Create a new post with optional hero image upload to S3/MinIO.
@@ -40,11 +54,17 @@ async def create_post(
     hero_image_link = ""
     if hero_image and hero_image.filename:
         # Validate file type
-        allowed_types = {"image/jpeg", "image/png", "image/webp", "image/gif", "image/svg+xml"}
+        allowed_types = {
+            "image/jpeg",
+            "image/png",
+            "image/webp",
+            "image/gif",
+            "image/svg+xml",
+        }
         if hero_image.content_type not in allowed_types:
             raise HTTPException(
                 status_code=400,
-                detail=f"Invalid file type '{hero_image.content_type}'. Allowed: {', '.join(allowed_types)}"
+                detail=f"Invalid file type '{hero_image.content_type}'. Allowed: {', '.join(allowed_types)}",
             )
 
         # Read and upload
@@ -154,21 +174,32 @@ async def update_post(
         try:
             update_data["content"] = json.loads(content)
         except json.JSONDecodeError:
-            raise HTTPException(status_code=400, detail="Invalid JSON in 'content' field")
+            raise HTTPException(
+                status_code=400, detail="Invalid JSON in 'content' field"
+            )
 
     # Handle hero image upload/update
     if hero_image and hero_image.filename:
-        allowed_types = {"image/jpeg", "image/png", "image/webp", "image/gif", "image/svg+xml"}
+        allowed_types = {
+            "image/jpeg",
+            "image/png",
+            "image/webp",
+            "image/gif",
+            "image/svg+xml",
+        }
         if hero_image.content_type not in allowed_types:
             raise HTTPException(
                 status_code=400,
-                detail=f"Invalid file type '{hero_image.content_type}'. Allowed: {', '.join(allowed_types)}"
+                detail=f"Invalid file type '{hero_image.content_type}'. Allowed: {', '.join(allowed_types)}",
             )
 
         # Delete old image from S3 if it exists
         existing_post = service.get_post(post_id)
         if existing_post and existing_post.heroImage:
-            get_s3_service().delete_file(existing_post.heroImage)
+            try:
+                get_s3_service().delete_file(existing_post.heroImage)
+            except Exception:
+                pass
 
         file_content = await hero_image.read()
         update_data["heroImage"] = get_s3_service().upload_file(
@@ -180,7 +211,10 @@ async def update_post(
         # Delete old image from S3 if replacing with a URL
         existing_post = service.get_post(post_id)
         if existing_post and existing_post.heroImage:
-            get_s3_service().delete_file(existing_post.heroImage)
+            try:
+                get_s3_service().delete_file(existing_post.heroImage)
+            except Exception:
+                pass
         update_data["heroImage"] = hero_image_url
 
     if not update_data:
@@ -202,7 +236,10 @@ def delete_post(post_id: int, service: PostService = Depends(get_post_service)):
 
     # Delete hero image from S3 if it exists
     if post.heroImage:
-        get_s3_service().delete_file(post.heroImage)
+        try:
+            get_s3_service().delete_file(post.heroImage)
+        except Exception:
+            pass
 
     success = service.delete_post(post_id)
     if not success:

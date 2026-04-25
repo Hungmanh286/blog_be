@@ -46,7 +46,7 @@ class S3Service:
                 self._set_public_read_policy()
             else:
                 logger.info("Bucket '%s' đã tồn tại.", self.bucket_name)
-        except S3Error as e:
+        except Exception as e:
             logger.error("Lỗi khi kết nối với MinIO: %s", e)
             # Không raise ở init để app vẫn có thể khởi động nếu MinIO chưa kịp online
             pass
